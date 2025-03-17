@@ -1,6 +1,5 @@
 import streamlit as st
-from ui.roi_tab import roi_tab
-from ui.track_speed_tab import track_tab
+from ui.tab.track_speed_tab import track_tab
 
 st.set_page_config(page_title="POC", layout="wide")
 st.title("인천공항 POC")

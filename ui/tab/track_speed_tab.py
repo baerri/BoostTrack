@@ -9,7 +9,7 @@ from external.adaptors.detector import Detector
 from tracker.boost_track import BoostTrack
 from PIL import Image
 from streamlit_drawable_canvas import st_canvas
-from ui.utils.roi import extract_thumbnail, is_inside_roi, calculate_roi_mid_length, roi_ui
+from ui.component.roi import extract_thumbnail, is_inside_roi, calculate_roi_mid_length, roi_ui
 
 ROI_POLYGON = np.array([(613, 19), (489, 37), (572, 329), (718, 296)], np.int32)
 FPS = 30                   # 비디오 FPS (기본값, 실제 FPS는 비디오에서 가져옴)
@@ -26,6 +26,13 @@ def track_tab():
     roi_ui()
 
     if st.button("모델 실행"):
+        speed_col, map_col2 = st.columns(2)
+        
+        with speed_col:
+            frame_display = st.empty()
+        with map_col2:
+            frame_mapping = st.empty()
+
         detector = Detector("yolox", "external/weights/bytetrack_x_mot20.tar", "custom")
         tracker = BoostTrack()
 
@@ -40,8 +47,6 @@ def track_tab():
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
         out = cv2.VideoWriter(output_video_path, fourcc, frame_rate, (frame_width, frame_height))
 
-        frame_display = st.empty()
-
         frame_count = 0
         last_update_frame = 0
         object_positions = {}   # {object_id: {"start": (x, y), "last": (x, y)}}
@@ -49,9 +54,10 @@ def track_tab():
         object_last_frame = {}  # {object_id: 마지막 업데이트된 frame 번호}
         avg_speed_text = "Avg Speed: 0.00 px/s"
         speed_log = ""          # 속도 로그를 누적해서 저장할 문자열
-
         # ROI 직선 길이 및 중간 선 좌표 계산 -> 대기열 길이
         roi_length, left_mid, right_mid = calculate_roi_mid_length(st.session_state.roi_polygon)
+
+        base_mapping_bg = np.ones((frame_height, frame_width, 3) , dtype=np.uint8) * 255
 
         while cap.isOpened():
             start_time = time.time()
@@ -63,6 +69,10 @@ def track_tab():
             # ROI 영역 그리기 (ROI 다각형과 ROI 중간 선(파란색) 표시)
             cv2.polylines(frame, [st.session_state.roi_polygon], isClosed=True, color=(255, 0, 0), thickness=2)
             cv2.line(frame, left_mid, right_mid, (255, 0, 0), 2)
+
+            cv2.polylines(base_mapping_bg, [st.session_state.roi_polygon] , isClosed=True, color=(255, 0, 0), thickness=2)
+            cv2.line(base_mapping_bg, left_mid, right_mid, (255, 0, 0), 2) 
+            mapping_bg = base_mapping_bg.copy()
 
             # 프레임 해상도 조정 및 색상 변환 (BGR → RGB)
             img_numpy = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -96,6 +106,11 @@ def track_tab():
                             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
                             cv2.putText(frame, f"ID: {track_id}", (x1, y1 - 10),
                                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                            # 매핑 이미지에 중심점 및 ID 표시
+                            cv2.circle(mapping_bg, center, 5, (0, 0, 255), -1)  # 빨간색 중심점
+                            cv2.putText(mapping_bg, f"{track_id}", (center[0] + 10, center[1]),
+                                                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                            
                             # ROI 내부이면 객체 위치 업데이트 및 현재 프레임 기록
                             if track_id not in object_positions:
                                 object_positions[track_id] = {"start": center, "last": center}
@@ -153,6 +168,7 @@ def track_tab():
             # 결과 프레임 저장 및 실시간 표시
             out.write(frame)
             frame_display.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), channels="RGB", use_container_width=True)
+            frame_mapping.image(mapping_bg, channels="RGB", use_container_width=True)
 
         cap.release()
         out.release()
