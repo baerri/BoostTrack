@@ -9,6 +9,7 @@ from default_settings import GeneralSettings, get_detector_path_and_im_size, Boo
 from external.adaptors import detector
 from tracker.GBI import GBInterpolation
 from tracker.boost_track import BoostTrack
+import assets
 
 """
 Script modified from Deep OC-SORT: 

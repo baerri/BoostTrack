@@ -6,6 +6,7 @@ import tempfile
 from external.adaptors.detector import Detector
 from tracker.boost_track import BoostTrack
 from typing import List, Dict, Tuple, Union, Optional
+import assets
 
 class BoostTrackWrapper:
     """

@@ -10,6 +10,7 @@ from tracker.boost_track import BoostTrack
 from PIL import Image
 from streamlit_drawable_canvas import st_canvas
 from ui.component.roi import extract_thumbnail, is_inside_roi, calculate_roi_mid_length, roi_ui
+import assets
 
 ROI_POLYGON = np.array([(613, 19), (489, 37), (572, 329), (718, 296)], np.int32)
 FPS = 30                   # 비디오 FPS (기본값, 실제 FPS는 비디오에서 가져옴)
@@ -65,7 +66,7 @@ def track_tab():
             if not ret:
                 break
             frame_count += 1
-            
+
             # ROI 영역 그리기 (ROI 다각형과 ROI 중간 선(파란색) 표시)
             cv2.polylines(frame, [st.session_state.roi_polygon], isClosed=True, color=(255, 0, 0), thickness=2)
             cv2.line(frame, left_mid, right_mid, (255, 0, 0), 2)
