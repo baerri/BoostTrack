@@ -65,7 +65,7 @@ def track_tab():
             if not ret:
                 break
             frame_count += 1
-
+            
             # ROI 영역 그리기 (ROI 다각형과 ROI 중간 선(파란색) 표시)
             cv2.polylines(frame, [st.session_state.roi_polygon], isClosed=True, color=(255, 0, 0), thickness=2)
             cv2.line(frame, left_mid, right_mid, (255, 0, 0), 2)
@@ -82,7 +82,7 @@ def track_tab():
             img /= 255.0
             if len(img.shape) == 3:
                 img = img.unsqueeze(0)
-
+            print(f"원본 코드 이미지 형태: {img.shape}")
             # 객체 탐지를 위한 YOLOX 추론
             with torch.no_grad():
                 outputs = detector.detect(img)

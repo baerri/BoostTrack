@@ -176,3 +176,4 @@ cython_debug/
 *.txt
 *.tar
 *.pth
+!assets/sample1.mp4
