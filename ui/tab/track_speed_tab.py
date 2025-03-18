@@ -10,6 +10,7 @@ from tracker.boost_track import BoostTrack
 from PIL import Image
 from streamlit_drawable_canvas import st_canvas
 from ui.component.roi import extract_thumbnail, is_inside_roi, calculate_roi_mid_length, roi_ui
+import assets
 
 ROI_POLYGON = np.array([(613, 19), (489, 37), (572, 329), (718, 296)], np.int32)
 FPS = 30                   # 비디오 FPS (기본값, 실제 FPS는 비디오에서 가져옴)
@@ -82,7 +83,7 @@ def track_tab():
             img /= 255.0
             if len(img.shape) == 3:
                 img = img.unsqueeze(0)
-
+            print(f"원본 코드 이미지 형태: {img.shape}")
             # 객체 탐지를 위한 YOLOX 추론
             with torch.no_grad():
                 outputs = detector.detect(img)

@@ -5,7 +5,7 @@ import pickle
 import torch
 
 from external.adaptors import yolox_adaptor
-
+import assets
 
 class Detector(torch.nn.Module): # 객체탐지를 위한 Detector클래스, 미리 정의된 모델은 yolox밖에 없음
     K_MODELS = {"yolox"}

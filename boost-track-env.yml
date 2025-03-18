@@ -145,4 +145,5 @@ dependencies:
       - termcolor==2.1.0
       - streamlit==1.40
       - streamlit-drawable-canvas==0.9.3
+      - huggingface_hub
 prefix: /home/aims/anaconda3/envs/torch-2.1.0-3.8.1

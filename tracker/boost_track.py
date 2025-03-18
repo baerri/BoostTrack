@@ -15,6 +15,7 @@ from tracker.embedding import EmbeddingComputer
 from tracker.assoc import associate, iou_batch, MhDist_similarity, shape_similarity, soft_biou_batch
 from tracker.ecc import ECC
 from tracker.kalmanfilter import KalmanFilter
+import assets
 
 def convert_bbox_to_z(bbox):
     """
